@@ -5,14 +5,14 @@ import time
 import pytest
 from playwright.sync_api import sync_playwright
 import requests
-
+import sys
 @pytest.fixture(scope='session')
 def fastapi_server():
     """
     Fixture to start the FastAPI server before E2E tests and stop it after tests complete.
     """
     # Start FastAPI app
-    fastapi_process = subprocess.Popen(['python', 'main.py'])
+    fastapi_process = subprocess.Popen([sys.executable, 'main.py'])
     
     # Define the URL to check if the server is up
     server_url = 'http://127.0.0.1:8000/'

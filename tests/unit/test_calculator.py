@@ -232,3 +232,32 @@ def test_divide_by_zero() -> None:
     # Assert that the exception message contains the expected error message
     assert "Cannot divide by zero!" in str(excinfo.value), \
         f"Expected error message 'Cannot divide by zero!', but got '{excinfo.value}'"
+
+
+# Additional edge cases: larger values, negative results, and fractions.
+@pytest.mark.parametrize(
+    "operation, a, b, expected",
+    [
+        (add, -10, 10, 0),
+        (add, 1_000_000, 2_000_000, 3_000_000),
+        (subtract, 0, -7, 7),
+        (subtract, -4, 9, -13),
+        (multiply, -4, -5, 20),
+        (multiply, 0, -99, 0),
+        (divide, 7, 2, 3.5),
+        (divide, -9, -3, 3),
+    ],
+)
+def test_arithmetic_edge_cases(operation, a, b, expected):
+    assert operation(a, b) == pytest.approx(expected)
+
+
+def test_floating_point_addition():
+    # Floating point math can produce 0.30000000000000004 instead of 0.3.
+    assert add(0.1, 0.2) == pytest.approx(0.3)
+
+
+@pytest.mark.parametrize("zero", [0, 0.0, -0.0])
+def test_divide_rejects_all_zero_divisors(zero):
+    with pytest.raises(ValueError, match="Cannot divide by zero!"):
+        divide(10, zero)

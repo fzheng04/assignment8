@@ -152,3 +152,66 @@ def test_divide_by_zero_api(client):
     # Assert that the 'error' field contains the correct error message
     assert "Cannot divide by zero!" in response.json()['error'], \
         f"Expected error message 'Cannot divide by zero!', got '{response.json()['error']}'"
+
+
+def test_homepage_is_served(client):
+    response = client.get("/")
+    assert response.status_code == 200
+    assert "Hello World" in response.text
+    assert "Calculator" in response.text
+
+
+@pytest.mark.parametrize(
+    "endpoint, payload, expected",
+    [
+        ("add", {"a": -10, "b": 3}, -7),
+        ("add", {"a": 0.1, "b": 0.2}, 0.3),
+        ("subtract", {"a": 0, "b": -2}, 2),
+        ("subtract", {"a": -8, "b": -3}, -5),
+        ("multiply", {"a": -2, "b": -5}, 10),
+        ("multiply", {"a": 0, "b": 999}, 0),
+        ("divide", {"a": 7, "b": 2}, 3.5),
+        ("divide", {"a": -8, "b": -2}, 4),
+    ],
+)
+def test_api_edge_cases(client, endpoint, payload, expected):
+    response = client.post(f"/{endpoint}", json=payload)
+    assert response.status_code == 200
+    assert response.json()["result"] == pytest.approx(expected)
+
+
+@pytest.mark.parametrize("endpoint", ["add", "subtract", "multiply", "divide"])
+@pytest.mark.parametrize(
+    "payload",
+    [
+        {"a": 10},                   # Missing b
+        {"a": "not-a-number", "b": 2},  # Invalid a
+        {"a": 10, "b": None},        # Invalid b
+    ],
+)
+def test_api_rejects_invalid_input(client, endpoint, payload):
+    response = client.post(f"/{endpoint}", json=payload)
+    assert response.status_code == 400
+    assert "error" in response.json()
+
+
+def test_api_rejects_float_zero_divisor(client):
+    response = client.post("/divide", json={"a": 10, "b": 0.0})
+    assert response.status_code == 400
+    assert response.json()["error"] == "Cannot divide by zero!"
+
+
+@pytest.mark.parametrize(
+    "endpoint, log_message",
+    [
+        ("add", "Addition:"),
+        ("subtract", "Subtraction:"),
+        ("multiply", "Multiplication:"),
+        ("divide", "Division:"),
+    ],
+)
+def test_successful_operations_are_logged(client, caplog, endpoint, log_message):
+    with caplog.at_level("INFO"):
+        response = client.post(f"/{endpoint}", json={"a": 10, "b": 2})
+    assert response.status_code == 200
+    assert log_message in caplog.text

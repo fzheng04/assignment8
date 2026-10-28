@@ -71,4 +71,43 @@ def test_calculator_divide_by_zero(page, fastapi_server):
     # Use an assertion to check that the text within the result div (with id 'result') is exactly
     # "Error: Cannot divide by zero!". This verifies that the application handles division by zero
     # gracefully and displays the correct error message to the user.
-    assert page.inner_text('#result') == 'Error: Cannot divide by zero!'
+    expect(page.locator('#result')).to_have_text(
+        'Error: Cannot divide by zero!',
+        timeout=10000,
+    )
+
+
+@pytest.mark.e2e
+@pytest.mark.parametrize(
+    "a, b, button, expected",
+    [
+        ("10", "5", "Subtract", "5"),
+        ("10", "5", "Multiply", "50"),
+        ("10", "5", "Divide", "2"),
+        ("-4", "2", "Add", "-2"),
+        ("2", "5", "Subtract", "-3"),
+        ("7", "2", "Divide", "3.5"),
+    ],
+)
+def test_calculator_other_operations(page, fastapi_server, a, b, button, expected):
+    page.goto('http://localhost:8000')
+    page.fill('#a', a)
+    page.fill('#b', b)
+    page.get_by_role('button', name=button, exact=True).click()
+    expect(page.locator('#result')).to_have_text(
+        f'Calculation Result: {expected}',
+        timeout=10000,
+    )
+
+
+@pytest.mark.e2e
+def test_calculator_result_updates_between_operations(page, fastapi_server):
+    page.goto('http://localhost:8000')
+    page.fill('#a', '10')
+    page.fill('#b', '5')
+    page.get_by_role('button', name='Add').click()
+    expect(page.locator('#result')).to_have_text('Calculation Result: 15')
+
+    page.fill('#b', '2')
+    page.get_by_role('button', name='Multiply').click()
+    expect(page.locator('#result')).to_have_text('Calculation Result: 20')

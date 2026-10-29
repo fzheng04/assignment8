@@ -1,264 +1,115 @@
-# 📦 Project Setup
+# FastAPI Calculator - IS601 Module 8
 
----
+## Project Overview
 
-# 🧩 1. Install Homebrew (Mac Only)
+This assignment is a web-based calculator built using Python and FastAPI for IS601 Module 8.
 
-> Skip this step if you're on Windows.
+The application supports addition, subtraction, multiplication, and division through a browser interface and REST API.
 
-Homebrew is a package manager for macOS.  
-You’ll use it to easily install Git, Python, Docker, etc.
+The project demonstrates automated testing, logging, Docker containerization, and CI/CD using GitHub Actions.
 
-**Install Homebrew:**
+## Technologies Used
 
-```bash
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-```
+- Python 3.12
+- FastAPI
+- pytest
+- Playwright
+- Docker and Docker Compose
+- GitHub Actions
+- Trivy Security Scanner
+- Docker Hub
 
-**Verify Homebrew:**
+## Features
 
-```bash
-brew --version
-```
+- Addition, subtraction, multiplication, and division
+- Support for negative numbers and decimals
+- Input validation and division-by-zero handling
+- Logging of calculations and errors
+- Automated unit, integration, and end-to-end tests
+- Docker deployment and GitHub Actions CI/CD
 
-If you see a version number, you're good to go.
+## Running the Application
 
----
-
-# 🧩 2. Install and Configure Git
-
-## Install Git
-
-- **MacOS (using Homebrew)**
-
-```bash
-brew install git
-```
-
-- **Windows**
-
-Download and install [Git for Windows](https://git-scm.com/download/win).  
-Accept the default options during installation.
-
-**Verify Git:**
+Clone the repository:
 
 ```bash
-git --version
+git clone https://github.com/fzheng04/assignment8.git
+cd assignment8
 ```
 
----
-
-## Configure Git Globals
-
-Set your name and email so Git tracks your commits properly:
+Build and start the application with Docker:
 
 ```bash
-git config --global user.name "Your Name"
-git config --global user.email "your_email@example.com"
+docker compose up -d --build
 ```
 
-Confirm the settings:
+Open the calculator at:
+
+http://localhost:8000
+
+View application logs:
 
 ```bash
-git config --list
+docker compose logs -f web
 ```
 
----
-
-## Generate SSH Keys and Connect to GitHub
-
-> Only do this once per machine.
-
-1. Generate a new SSH key:
+Stop the application:
 
 ```bash
-ssh-keygen -t ed25519 -C "your_email@example.com"
+docker compose down
 ```
 
-(Press Enter at all prompts.)
+## Automated Testing
 
-2. Start the SSH agent:
+The project includes 74 automated test cases across three categories.
 
-```bash
-eval "$(ssh-agent -s)"
-```
+**Unit Tests:** Verify individual arithmetic functions, including negative numbers, decimals, and division by zero.
 
-3. Add the SSH private key to the agent:
+**Integration Tests:** Verify FastAPI endpoints, HTTP responses, input validation, and logging.
 
-```bash
-ssh-add ~/.ssh/id_ed25519
-```
+**End-to-End Tests:** Use Playwright to simulate browser interactions, including entering numbers, clicking buttons, and verifying results.
 
-4. Copy your SSH public key:
-
-- **Mac/Linux:**
-
-```bash
-cat ~/.ssh/id_ed25519.pub | pbcopy
-```
-
-- **Windows (Git Bash):**
-
-```bash
-cat ~/.ssh/id_ed25519.pub | clip
-```
-
-5. Add the key to your GitHub account:
-   - Go to [GitHub SSH Settings](https://github.com/settings/keys)
-   - Click **New SSH Key**, paste the key, save.
-
-6. Test the connection:
-
-```bash
-ssh -T git@github.com
-```
-
-You should see a success message.
-
----
-
-# 🧩 3. Clone the Repository
-
-Now you can safely clone the course project:
-
-```bash
-git clone <repository-url>
-cd <repository-directory>
-```
-
----
-
-# 🛠️ 4. Install Python 3.10+
-
-## Install Python
-
-- **MacOS (Homebrew)**
-
-```bash
-brew install python
-```
-
-- **Windows**
-
-Download and install [Python for Windows](https://www.python.org/downloads/).  
-✅ Make sure you **check the box** `Add Python to PATH` during setup.
-
-**Verify Python:**
-
-```bash
-python3 --version
-```
-or
-```bash
-python --version
-```
-
----
-
-## Create and Activate a Virtual Environment
-
-(Optional but recommended)
-
-```bash
-python3 -m venv venv
-source venv/bin/activate   # Mac/Linux
-venv\Scripts\activate.bat  # Windows
-```
-
-### Install Required Packages
+Run the tests after installing the dependencies:
 
 ```bash
 pip install -r requirements.txt
+python -m playwright install chromium
+
+pytest tests/unit/
+pytest tests/integration/
+pytest tests/e2e/
 ```
 
----
+Note: End-to-end tests start their own FastAPI server, so port 8000 should be available.
 
-# 🐳 5. (Optional) Docker Setup
+## GitHub Actions CI/CD
 
-> Skip if Docker isn't used in this module.
+GitHub Actions automatically runs the following jobs:
 
-## Install Docker
+1. **Test:** Runs unit, integration, and Playwright tests.
+2. **Security:** Scans the Docker image using Trivy.
+3. **Deploy:** Builds and pushes the Docker image to Docker Hub.
 
-- [Install Docker Desktop for Mac](https://www.docker.com/products/docker-desktop/)
-- [Install Docker Desktop for Windows](https://www.docker.com/products/docker-desktop/)
+The workflow runs automatically on pushes to the main branch.
 
-## Build Docker Image
+## Repository Links
 
-```bash
-docker build -t <image-name> .
-```
+**GitHub:** https://github.com/fzheng04/assignment8
 
-## Run Docker Container
+**GitHub Actions:** https://github.com/fzheng04/assignment8/actions
 
-```bash
-docker run -it --rm <image-name>
-```
+**Docker Hub:** https://hub.docker.com/r/fzheng04/assignment8
 
----
+## Acknowledgments
 
-# 🚀 6. Running the Project
+Based on the IS601 Module 8 FastAPI Calculator starter project:
 
-- **Without Docker**:
+https://github.com/kaw393939/module8_is601
 
-```bash
-python main.py
-```
+Enhanced with additional testing, logging, and CI/CD improvements.
 
-(or update this if the main script is different.)
+## Author
 
-- **With Docker**:
+Feiyang Zheng
 
-```bash
-docker run -it --rm <image-name>
-```
-
----
-
-# 📝 7. Submission Instructions
-
-After finishing your work:
-
-```bash
-git add .
-git commit -m "Complete Module X"
-git push origin main
-```
-
-Then submit the GitHub repository link as instructed.
-
----
-
-# 🔥 Useful Commands Cheat Sheet
-
-| Action                         | Command                                          |
-| ------------------------------- | ------------------------------------------------ |
-| Install Homebrew (Mac)          | `/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"` |
-| Install Git                     | `brew install git` or Git for Windows installer |
-| Configure Git Global Username  | `git config --global user.name "Your Name"`      |
-| Configure Git Global Email     | `git config --global user.email "you@example.com"` |
-| Clone Repository                | `git clone <repo-url>`                          |
-| Create Virtual Environment     | `python3 -m venv venv`                           |
-| Activate Virtual Environment   | `source venv/bin/activate` / `venv\Scripts\activate.bat` |
-| Install Python Packages        | `pip install -r requirements.txt`               |
-| Build Docker Image              | `docker build -t <image-name> .`                |
-| Run Docker Container            | `docker run -it --rm <image-name>`               |
-| Push Code to GitHub             | `git add . && git commit -m "message" && git push` |
-
----
-
-# 📋 Notes
-
-- Install **Homebrew** first on Mac.
-- Install and configure **Git** and **SSH** before cloning.
-- Use **Python 3.10+** and **virtual environments** for Python projects.
-- **Docker** is optional depending on the project.
-
----
-
-# 📎 Quick Links
-
-- [Homebrew](https://brew.sh/)
-- [Git Downloads](https://git-scm.com/downloads)
-- [Python Downloads](https://www.python.org/downloads/)
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/)
-- [GitHub SSH Setup Guide](https://docs.github.com/en/authentication/connecting-to-github-with-ssh)
+IS601 - Module 8

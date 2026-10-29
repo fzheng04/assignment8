@@ -111,3 +111,19 @@ def test_calculator_result_updates_between_operations(page, fastapi_server):
     page.fill('#b', '2')
     page.get_by_role('button', name='Multiply').click()
     expect(page.locator('#result')).to_have_text('Calculation Result: 20')
+
+
+@pytest.mark.e2e
+def test_calculator_decimal_multiplication(page, fastapi_server):
+    """Verify decimal multiplication works in the browser."""
+
+    page.goto("http://localhost:8000")
+
+    page.fill("#a", "2.5")
+    page.fill("#b", "4")
+
+    page.get_by_role("button", name="Multiply").click()
+
+    expect(page.locator("#result")).to_have_text(
+        "Calculation Result: 10"
+    )
